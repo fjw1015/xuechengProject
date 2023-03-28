@@ -16,7 +16,7 @@ import java.io.File;
 /**
  * @author fjw
  * @date 2023/3/21 16:49
- * @description
+ * @description 大文件上传接口
  */
 @Api(value = "大文件上传接口", tags = "大文件上传接口")
 @RestController

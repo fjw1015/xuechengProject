@@ -1,6 +1,23 @@
 # xuechengProject
-### 学成教育平台
-##### 后端使用spring Boot、MySQL、Nacos、MinIO、Spring cloud gateway、Mybatis Plus
+
+### 学成教学平台
+
+> 简单理解就是教师上传自己的视频课程数据，学生在该平台进行买课程和观看视频学习。为实现该过程而搭建的一个教学平台。
+
+##### 后端使用spring Boot、MySQL、Nacos、MinIO、Spring cloud gateway、Mybatis Plus、xxl-job
+
 ##### 前端使用 Vue、ts、node.js
-##### 其中中间件都部署在同一台虚拟机服务器中，使用docker搭建
+
+> 前端启动 先下载相关modules -> 启动
+> 
+> npm i
+> 
+> npm run serve
+
+##### 其中中间件都部署在同一台虚拟机服务器中，使用docker搭建部署
+
+> ![](C:\Users\15679\AppData\Roaming\marktext\images\2023-03-23-16-55-46-image.png)
+> 
+> 为了方便，代码提交到git平台 不再自己搭建gogs 原理和git基本一致
+
 ##### 前端使用VSCode 后端使用IDEA
