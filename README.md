@@ -16,7 +16,7 @@
 
 ##### 其中中间件都部署在同一台虚拟机服务器中，使用docker搭建部署
 
-> <img title="" src="img/虚拟机中间件.png" alt="" data-align="inline">
+> ![虚拟机中间件.png](./img/虚拟机中间件.png)
 > 
 > 为了方便，代码提交到git平台 不再自己搭建gogs 原理和git基本一致
 
