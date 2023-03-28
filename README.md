@@ -16,7 +16,7 @@
 
 ##### 其中中间件都部署在同一台虚拟机服务器中，使用docker搭建部署
 
-> ![虚拟机中间件.png](./img/虚拟机中间件.png)
+> ![虚拟机中间件.png](https://raw.githubusercontent.com/fjw1015/xuechengProject/master/img/%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E9%97%B4%E4%BB%B6.png)
 > 
 > 为了方便，代码提交到git平台 不再自己搭建gogs 原理和git基本一致
 
