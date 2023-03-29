@@ -29,7 +29,7 @@ public interface MediaFileService {
     public PageResult<MediaFiles> queryMediaFiles(Long companyId, PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto);
     
     
-    UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String absolutePath);
+    UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String absolutePath, String objectName);
     
     MediaFiles addMediaFilesToDb(Long companyId, String fileMd5, UploadFileParamsDto uploadFileParamsDto, String bucket, String objectName);
     
@@ -62,4 +62,5 @@ public interface MediaFileService {
     
     public File downloadFileFromMinIO(String bucket, String objectName);
     
+    MediaFiles getFileById(String mediaId);
 }

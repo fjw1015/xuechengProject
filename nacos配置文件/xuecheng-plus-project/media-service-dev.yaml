@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.5.129:3306/xczx?serverTimezone=UTC&userUnicode=true&useSSL=false&
+    username: root
+    password: root
+  cloud:
+   config:
+    override-none: true
+  servlet:
+    multipart:
+      enabled: true #开启文件上传
+      max-file-size: 100MB #限制文件上传大小为10M
+      max-request-size: 100MB
+
+minio:
+  endpoint: http://192.168.5.129:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucket:
+    files: mediafiles
+    video: video
+xxl:
+  job:
+    admin: 
+      addresses: http://192.168.5.129:8088/xxl-job-admin
+    executor:
+      appname: media-process-service
+      #appname: testHandler
+      address: 
+      ip: 
+      port: 9999
+      logpath: /data/applogs/xxl-job/jobhandler
+      logretentiondays: 30
+    accessToken: default_token
+
+videoprocess:
+ ffmpegpath: E:/environment/ffmpeg/ffmpeg.exe
+

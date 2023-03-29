@@ -127,7 +127,7 @@ public class MediaFileServiceImpl implements MediaFileService {
      * 文件上传 有网络请求，不便添加事务
      */
     @Override
-    public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath) {
+    public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath, String objectName) {
         File file = new File(localFilePath);
         if (!file.exists()) {
             XueChengException.cast("文件不存在");
@@ -143,7 +143,9 @@ public class MediaFileServiceImpl implements MediaFileService {
         //获取文件的默认目录
         String defaultFolderPath = getDefaultFolderPath();
         //存储到minio中的对象名(带目录)
-        String objectName = defaultFolderPath + fileMd5 + extension;
+        if (StringUtils.isEmpty(objectName)) {
+            objectName = defaultFolderPath + fileMd5 + extension;
+        }
         //将文件上传到minio
         boolean result = addMediaFilesToMinIO(localFilePath, mimeType, bucketFiles, objectName);
         if (!result) {
@@ -464,5 +466,10 @@ public class MediaFileServiceImpl implements MediaFileService {
             }
         }
         return null;
+    }
+    
+    @Override
+    public MediaFiles getFileById(String mediaId) {
+        return mediaFilesMapper.selectById(mediaId);
     }
 }

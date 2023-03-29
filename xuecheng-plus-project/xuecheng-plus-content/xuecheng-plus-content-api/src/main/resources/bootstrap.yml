@@ -6,15 +6,15 @@ spring:
     nacos:
       server-addr: 192.168.5.129:8848
       discovery: # 服务注册相关配置
-        namespace: dev
+        namespace: ${spring.profiles.active}
         group: xuecheng-plus-project
       config: # 配置文件相关配置
-        namespace: dev
+        namespace: ${spring.profiles.active}
         group: xuecheng-plus-project
         file-extension: yaml
         refresh-enabled: true
         extension-configs:
-          - data-id: content-serive-${spring.profiles.active}.yaml
+          - data-id: content-service-${spring.profiles.active}.yaml
             group: xuecheng-plus-project
             refresh: true
         shared-configs:
@@ -26,6 +26,12 @@ spring:
             refresh: true
           - data-id: freemarker-config-${spring.profiles.active}.yaml
             group: xuecheng-plus-common
+            refresh: true
+          - data-id: feign-${spring.profiles.active}.yaml
+            group: xuecheng-plus-common
+            refresh: true
+          - data-id: search-${spring.profiles.active}.yaml
+            group: xuecheng-plus-project
             refresh: true
   profiles:
     active: dev
