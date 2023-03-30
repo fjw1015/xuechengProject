@@ -9,6 +9,7 @@ import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.po.CourseBase;
 import com.xuecheng.content.service.CourseBaseInfoService;
+import com.xuecheng.content.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,24 +40,32 @@ public class CourseBaseInfoController {
     @ApiOperation("课程新增接口")
     @PostMapping("/course")
     public CourseBaseInfoDto createCourseBase(@RequestBody @Validated(ValidationGroups.Insert.class) AddCourseDto addCourseDto) {
-        return courseBaseInfoService.createCourseBase(1232141425L, addCourseDto);
+        long companyId = 1232141425L;
+        return courseBaseInfoService.createCourseBase(companyId, addCourseDto);
     }
 
     @ApiOperation("根据课程id查询")
     @GetMapping("/course/{courseId}")
     public CourseBaseInfoDto getCourseById(@PathVariable Long courseId) {
+        //获取当前用户的身份
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        if (user != null) {
+            System.out.println(user.getUsername());
+        }
         return courseBaseInfoService.getCourseById(courseId);
     }
 
     @ApiOperation("修改课程")
     @PutMapping("/course")
     public CourseBaseInfoDto modifyCourse(@RequestBody @Validated(ValidationGroups.Update.class) EditCourseDto editCourseDto) {
-        return courseBaseInfoService.updateCourse(1232141425L, editCourseDto);
+        long companyId = 1232141425L;
+        return courseBaseInfoService.updateCourse(companyId, editCourseDto);
     }
 
     @ApiOperation("删除课程")
     @DeleteMapping("/course/{id}")
     public void deleteCourse(@PathVariable String id) {
-        courseBaseInfoService.deleteCourse(1232141425L, id);
+        long companyId = 1232141425L;
+        courseBaseInfoService.deleteCourse(companyId, id);
     }
 }

@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author fjw
- * @version 1.0
  * @description 用户扩展信息
- * @date 2022/03/28 13:56
+ * @author Mr.M
+ * @date 2022/9/30 13:56
+ * @version 1.0
  */
 @Data
 public class XcUserExt extends XcUser {

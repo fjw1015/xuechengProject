@@ -5,9 +5,10 @@ import com.xuecheng.ucenter.model.po.XcCompany;
 
 /**
  * <p>
- * Mapper 接口
+ *  Mapper 接口
  * </p>
- * @author fjw
+ *
+ * @author itcast
  */
 public interface XcCompanyMapper extends BaseMapper<XcCompany> {
 

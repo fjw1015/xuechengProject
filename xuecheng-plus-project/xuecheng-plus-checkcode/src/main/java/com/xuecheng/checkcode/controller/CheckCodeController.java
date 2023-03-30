@@ -20,17 +20,17 @@ import javax.annotation.Resource;
 @Api(value = "验证码服务接口")
 @RestController
 public class CheckCodeController {
-    
+
     @Resource(name = "PicCheckCodeService")
     private CheckCodeService picCheckCodeService;
-    
-    
+
+
     @ApiOperation(value = "生成验证信息", notes = "生成验证信息")
     @PostMapping(value = "/pic")
     public CheckCodeResultDto generatePicCheckCode(CheckCodeParamsDto checkCodeParamsDto) {
         return picCheckCodeService.generate(checkCodeParamsDto);
     }
-    
+
     @ApiOperation(value = "校验", notes = "校验")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "name", value = "业务名称", required = true, dataType = "String", paramType = "query"),

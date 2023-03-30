@@ -5,9 +5,10 @@ import com.xuecheng.ucenter.model.po.XcPermission;
 
 /**
  * <p>
- * Mapper 接口
+ *  Mapper 接口
  * </p>
- * @author fjw
+ *
+ * @author itcast
  */
 public interface XcPermissionMapper extends BaseMapper<XcPermission> {
 
