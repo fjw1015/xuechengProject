@@ -47,7 +47,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
     private CourseTeacherService courseTeacherService;
 
     @Override
-    public PageResult<CourseBase> queryCourseBaseList(PageParams pageParams, QueryCourseParamsDto courseParamsDto) {
+    public PageResult<CourseBase> queryCourseBaseList(Long companyId, PageParams pageParams, QueryCourseParamsDto courseParamsDto) {
         //拼装查询条件
         LambdaQueryWrapper<CourseBase> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotEmpty(courseParamsDto.getCourseName()
@@ -58,6 +58,8 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         //按课程发布状态查询
         queryWrapper.eq(StringUtils.isNotEmpty(courseParamsDto.getPublishStatus()),
                 CourseBase::getStatus, courseParamsDto.getPublishStatus());
+        //按机构id查询
+        queryWrapper.eq(CourseBase::getCompanyId, companyId);
         Page<CourseBase> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
         Page<CourseBase> pageResult = courseBaseMapper.selectPage(page, queryWrapper);
         List<CourseBase> item = pageResult.getRecords();

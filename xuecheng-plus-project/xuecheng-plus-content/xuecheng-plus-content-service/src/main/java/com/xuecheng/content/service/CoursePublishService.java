@@ -46,4 +46,6 @@ public interface CoursePublishService extends IService<CoursePublish> {
      * @description 上传课程静态化页面
      */
     public void uploadCourseHtml(Long courseId, File file);
+
+    CoursePublish getCoursePublish(Long courseId);
 }

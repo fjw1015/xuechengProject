@@ -42,8 +42,11 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public RestErrorResponse exception(XueChengException e) {
-        log.error("系统默认异常 {}", e.getErrMessage(), e);
+    public RestErrorResponse exception(Exception e) {
+        log.error("系统默认异常 {}", e.getMessage(), e);
+        if (e.getMessage().equals("不允许访问")) {
+            return new RestErrorResponse("您没有权限操作此功能");
+        }
         //解析异常信息
         return new RestErrorResponse(CommonError.UNKOWN_ERROR.getErrMessage());
     }
@@ -58,7 +61,7 @@ public class GlobalExceptionHandler {
         });
         //将错误信息拼接起来
         String msg = StringUtils.join(errors, ",");
-        log.error("系统处理异常 {}",msg );
+        log.error("系统处理异常 {}", msg);
         //解析异常信息
         return new RestErrorResponse(msg);
     }

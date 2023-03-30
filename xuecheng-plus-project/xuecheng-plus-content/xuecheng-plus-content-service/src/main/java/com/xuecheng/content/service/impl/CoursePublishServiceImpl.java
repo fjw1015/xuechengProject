@@ -262,4 +262,15 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
             e.printStackTrace();
         }
     }
+
+    /**
+     * 根据课程id查询课程发布信息
+     *
+     * @param courseId 课程id
+     * @return
+     */
+    @Override
+    public CoursePublish getCoursePublish(Long courseId) {
+        return coursePublishMapper.selectById(courseId);
+    }
 }

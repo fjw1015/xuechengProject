@@ -1,9 +1,11 @@
 package com.xuecheng.ucenter.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.xuecheng.ucenter.mapper.XcMenuMapper;
 import com.xuecheng.ucenter.mapper.XcUserMapper;
 import com.xuecheng.ucenter.model.dto.AuthParamsDto;
 import com.xuecheng.ucenter.model.dto.XcUserExt;
+import com.xuecheng.ucenter.model.po.XcMenu;
 import com.xuecheng.ucenter.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author fjw
@@ -24,7 +29,8 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserDetailsService {
     @Autowired
     XcUserMapper xcUserMapper;
-
+    @Autowired
+    XcMenuMapper xcMenuMapper;
     @Autowired
     ApplicationContext applicationContext;
 
@@ -62,14 +68,26 @@ public class UserServiceImpl implements UserDetailsService {
      * @description 查询用户信息
      */
     public UserDetails getUserPrincipal(XcUserExt user) {
-        //用户权限,如果不加报Cannot pass a null GrantedAuthority collection
-        String[] authorities = {"p1"};
         String password = user.getPassword();
+        //查询用户权限
+        List<XcMenu> xcMenus = xcMenuMapper.selectPermissionByUserId(user.getId());
+        List<String> permissions = new ArrayList<>();
+        if (xcMenus.size() <= 0) {
+            //用户权限,如果不加则报Cannot pass a null GrantedAuthority collection
+            permissions.add("p1");
+        } else {
+            xcMenus.forEach(menu -> {
+                permissions.add(menu.getCode());
+            });
+        }
+        //将用户权限放在XcUserExt中
+        user.setPermissions(permissions);
+
         //为了安全在令牌中不放密码
         user.setPassword(null);
         //将user对象转json
         String userString = JSON.toJSONString(user);
-        //创建UserDetails对象
+        String[] authorities = permissions.toArray(new String[0]);
         return User.withUsername(userString).password(password).authorities(authorities).build();
     }
 
