@@ -39,6 +39,8 @@ public class MyCourseTableServiceImpl implements MyCourseTableService {
     MyCourseTableService myCourseTableService;
     @Autowired
     MyCourseTableServiceImpl currentProxy;
+    @Autowired
+    XcChooseCourseMapper chooseCourseMapper;
 
     @Transactional
     @Override
@@ -53,7 +55,7 @@ public class MyCourseTableServiceImpl implements MyCourseTableService {
             //添加免费课程
             chooseCourse = addFreeCoruse(userId, coursepublish);
             //添加到我的课程表
-            XcCourseTables xcCourseTables = addCourseTabls(chooseCourse);
+            XcCourseTables xcCourseTables = addCourseTables(chooseCourse);
         } else {
             //添加收费课程
             chooseCourse = addChargeCoruse(userId, coursepublish);
@@ -135,7 +137,7 @@ public class MyCourseTableServiceImpl implements MyCourseTableService {
      * @param xcChooseCourse 选课记录
      * @description 添加到我的课程表
      */
-    public XcCourseTables addCourseTabls(XcChooseCourse xcChooseCourse) {
+    public XcCourseTables addCourseTables(XcChooseCourse xcChooseCourse) {
         //选课记录完成且未过期可以添加课程到课程表
         String status = xcChooseCourse.getStatus();
         if (!"701001".equals(status)) {
@@ -147,16 +149,15 @@ public class MyCourseTableServiceImpl implements MyCourseTableService {
             return xcCourseTables;
         }
         XcCourseTables xcCourseTablesNew = new XcCourseTables();
-        BeanUtils.copyProperties(xcCourseTables, xcCourseTablesNew);
+        BeanUtils.copyProperties(xcChooseCourse, xcCourseTablesNew);
         xcCourseTablesNew.setChooseCourseId(xcChooseCourse.getId());
         xcCourseTablesNew.setCreateDate(LocalDateTime.now());
-        xcCourseTablesNew.setCourseType(xcChooseCourse.getOrderType()); //选课类型
+        xcCourseTablesNew.setCourseType(xcChooseCourse.getOrderType());
         int insert = xcCourseTablesMapper.insert(xcCourseTablesNew);
         if (insert <= 0) {
-            XueChengException.cast("添加课程表记录失败");
+            XueChengException.cast("添加课程表失败");
         }
         return xcCourseTablesNew;
-
     }
 
     /**
@@ -170,17 +171,20 @@ public class MyCourseTableServiceImpl implements MyCourseTableService {
         return xcCourseTablesMapper.selectOne(queryWrapper);
     }
 
+    /**
+     * @return XcCourseTablesDto 学习资格状态 [{"code":"702001","desc":"正常学习"},{"code":"702002","desc":"没有选课或选课后没有支付"},{"code":"702003","desc":"已过期需要申请续期或重新支付"}]
+     * @description 判断学习资格
+     */
     @Override
     public XcCourseTablesDto getLearningStatus(String userId, Long courseId) {
+        XcCourseTablesDto xcCourseTablesDto = new XcCourseTablesDto();
         //查询我的课程表
         XcCourseTables xcCourseTables = getXcCourseTables(userId, courseId);
         if (xcCourseTables == null) {
-            XcCourseTablesDto xcCourseTablesDto = new XcCourseTablesDto();
             //没有选课或选课后没有支付
             xcCourseTablesDto.setLearnStatus("702002");
             return xcCourseTablesDto;
         }
-        XcCourseTablesDto xcCourseTablesDto = new XcCourseTablesDto();
         BeanUtils.copyProperties(xcCourseTables, xcCourseTablesDto);
         //是否过期,true过期，false未过期
         boolean isExpires = xcCourseTables.getValidtimeEnd().isBefore(LocalDateTime.now());
@@ -188,12 +192,43 @@ public class MyCourseTableServiceImpl implements MyCourseTableService {
             //正常学习
             xcCourseTablesDto.setLearnStatus("702001");
             return xcCourseTablesDto;
-
         } else {
             //已过期
             xcCourseTablesDto.setLearnStatus("702003");
             return xcCourseTablesDto;
         }
+    }
 
+    @Transactional
+    @Override
+    public boolean saveChooseCourseSuccess(String chooseCourseId) {
+        //根据choosecourseId查询选课记录
+        XcChooseCourse xcChooseCourse = chooseCourseMapper.selectById(chooseCourseId);
+        if (xcChooseCourse == null) {
+            log.info("收到支付结果通知但没有查询到关联的选课记录,choosecourseId:{}", chooseCourseId);
+            return false;
+        }
+        String status = xcChooseCourse.getStatus();
+        if ("701001".equals(status)) {
+            //添加到课程表
+            addCourseTables(xcChooseCourse);
+            return true;
+        }
+        //只要当支付时才更新为已支付
+        if ("701002".equals(status)) {
+            //更新选课记录的状态为选课成功
+            xcChooseCourse.setStatus("701001");
+            int update = chooseCourseMapper.updateById(xcChooseCourse);
+            if (update > 0) {
+                log.info("收到支付结果通知处理成功,选课记录:{}", xcChooseCourse);
+                //添加到课程表
+                addCourseTables(xcChooseCourse);
+                return true;
+            } else {
+                log.info("收到支付结果通知处理失败,选课记录:{}", xcChooseCourse);
+                return false;
+            }
+        }
+        return false;
     }
 }

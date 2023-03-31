@@ -21,4 +21,12 @@ public interface MyCourseTableService {
      * @description 判断学习资格
      */
     public XcCourseTablesDto getLearningStatus(String userId, Long courseId);
+
+    /**
+     * 保存选课成功状态
+     *
+     * @param choosecourseId
+     * @return
+     */
+    boolean saveChooseCourseSuccess(String choosecourseId);
 }
