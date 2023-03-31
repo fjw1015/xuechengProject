@@ -18,6 +18,5 @@
 
 > 为了方便，代码提交到git平台 不再自己搭建gogs 原理和git基本一致
 > [![ppRvMxH.png](https://s1.ax1x.com/2023/04/01/ppRvMxH.png)](https://imgse.com/i/ppRvMxH)
-> ![虚拟机中间件.png](https://github.com/fjw1015/xuechengProject/blob/master/%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E9%97%B4%E4%BB%B6.png)
 
 ##### 前端使用VSCode 后端使用IDEA
