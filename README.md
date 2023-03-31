@@ -18,6 +18,6 @@
 
 > 为了方便，代码提交到git平台 不再自己搭建gogs 原理和git基本一致
 > 
-> ![虚拟机中间件.png](D:\Desktop\myproject\xuechengProject\虚拟机中间件.png)
+> ![虚拟机中间件.png](..\xuechengProject\虚拟机中间件.png)
 
 ##### 前端使用VSCode 后端使用IDEA
