@@ -10,5 +10,5 @@ spring:
     password: root
 
 weixin:
-  appid: wx17655f8047b85150
-  secret: 68918d65287802a19b1905cbda7eaa93
+  appid: your
+  secret: your
