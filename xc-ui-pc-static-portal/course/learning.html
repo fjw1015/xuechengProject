@@ -1044,8 +1044,8 @@
 				variable: 'player',//播放函数名称
 				poster:'/static/img/asset-video.png',//封面图片
 				//loaded: 'loadedHandler', //当播放器加载后执行的函数
-                //video:'http://file.51xuecheng.cn/video/1/f/1f229319d6fed3431d2f9d06193a433b/1f229319d6fed3431d2f9d06193a433b.mp4'
-				video:'http://file.51xuecheng.cn/video/a/6/a6fb4fc7faf1d3d0831819969529b888/a6fb4fc7faf1d3d0831819969529b888.mp4'
+				//video:'http://file.51xuecheng.cn/video/a/6/a6fb4fc7faf1d3d0831819969529b888/a6fb4fc7faf1d3d0831819969529b888.mp4'
+				video: '',
 				// video: [//视频地址列表形式
 				// 	['http://file.51xuecheng.cn/video/3/a/3a5a861d1c745d05166132c47b44f9e4/3a5a861d1c745d05166132c47b44f9e4.mp4', 'video/mp4', '中文标清', 0]
 				// ]
@@ -1055,7 +1055,7 @@
 
         },
         methods: {
-            getTeachplans() {
+            getTeachplan(s) {
                
             },
            
@@ -1089,7 +1089,7 @@
                 
                 if(mediaFile && mediaFile.mediaId){
                     //获取视频
-                    requestGetMeidaInfo(mediaFile.mediaId,mediaFile.teachplanId,this.courseId).then(res=>{
+                    requestGetMeidaInfo(mediaFile.mediaId,mediaFile.id,this.courseId).then(res=>{
                         if(res&&res.result){
                             //console.log(res.result)
                             var newVideoObject = {

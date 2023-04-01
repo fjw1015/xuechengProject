@@ -74,10 +74,8 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
     public CoursePreviewDto getCoursePreviewInfo(Long courseId) {
         //课程基本信息、营销信息
         CourseBaseInfoDto courseBaseInfo = courseBaseInfoService.getCourseById(courseId);
-
         //课程计划信息
         List<TeachPlanDto> teachPlanTree = teachplanService.getTreeNodes(courseId);
-
         CoursePreviewDto coursePreviewDto = new CoursePreviewDto();
         coursePreviewDto.setCourseBase(courseBaseInfo);
         coursePreviewDto.setTeachplans(teachPlanTree);
@@ -125,7 +123,6 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
         //转json
         String teachplanTreeString = JSON.toJSONString(teachplanTree);
         coursePublishPre.setTeachplan(teachplanTreeString);
-
         //设置预发布记录状态,已提交 202003
         coursePublishPre.setStatus("202003");
         //教学机构id
@@ -139,7 +136,6 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
         } else {
             coursePublishPreMapper.updateById(coursePublishPre);
         }
-
         //更新课程基本表的审核状态
         courseBase.setAuditStatus("202003");
         courseBaseMapper.updateById(courseBase);

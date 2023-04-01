@@ -22,14 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/open")
 public class MediaOpenController {
-    
+
     @Autowired
     MediaFileService mediaFileService;
-    
+
     @ApiOperation("预览文件")
     @GetMapping("/preview/{mediaId}")
     public RestResponse<String> getPlayUrlByMediaId(@PathVariable String mediaId) {
-        
         MediaFiles mediaFiles = mediaFileService.getFileById(mediaId);
         if (null == mediaFiles) {
             return RestResponse.validfail("找不到视频");
@@ -40,6 +39,4 @@ public class MediaOpenController {
         }
         return RestResponse.success(url);
     }
-    
-    
 }

@@ -59,5 +59,4 @@ public class LocalDateTimeConfig {
             builder.deserializerByType(LocalDateTime.class, localDateTimeDeserializer());
         };
     }
-
 }
