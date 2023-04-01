@@ -27,8 +27,11 @@ import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -38,10 +41,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -69,6 +70,10 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
     MqMessageService mqMessageService;
     @Autowired
     MediaServiceClient mediaServiceClient;
+    @Autowired
+    RedisTemplate redisTemplate;
+    @Autowired
+    RedissonClient redissonClient;
 
     @Override
     public CoursePreviewDto getCoursePreviewInfo(Long courseId) {
@@ -268,5 +273,159 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
     @Override
     public CoursePublish getCoursePublish(Long courseId) {
         return coursePublishMapper.selectById(courseId);
+    }
+    // 解决缓存穿透和缓存雪崩
+    //@Override
+    //public CoursePublish getCoursePublishCache(Long courseId) {
+    //    //查询缓存 如果查询是一个不存在的数据 将null存入缓存中 减少数据库压力
+    //    Object jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+    //    if (jsonObj != null) {
+    //        String jsonString = jsonObj.toString();
+    //        if ("null".equals(jsonString)) {
+    //            return null;
+    //        }
+    //        log.info("=================从缓存查=================");
+    //        return JSON.parseObject(jsonString, CoursePublish.class);
+    //    } else {
+    //        log.info("----------------从数据库查询----------------");
+    //        //从数据库查询
+    //        CoursePublish coursePublish = getCoursePublish(courseId);
+    //        if (coursePublish != null) {
+    //            //设置过期时间300秒 解决雪崩问题设置随机加10s
+    //            redisTemplate.opsForValue().set("course:" + courseId,
+    //                    JSON.toJSONString(coursePublish),
+    //                    300 + new Random().nextInt(100), TimeUnit.SECONDS);
+    //        }
+    //        return coursePublish;
+    //    }
+    //}
+
+    //解决缓存穿透
+    //@Override
+    //public CoursePublish getCoursePublishCache(Long courseId) {
+    //    //查询缓存 如果查询是一个不存在的数据 将null存入缓存中 减少数据库压力
+    //    Object jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+    //    if (jsonObj != null) {
+    //        String jsonString = jsonObj.toString();
+    //        if ("null".equals(jsonString)) {
+    //            return null;
+    //        }
+    //        log.info("=================从缓存查=================");
+    //        return JSON.parseObject(jsonString, CoursePublish.class);
+    //    } else {
+    //        //减小锁范围
+    //        synchronized (this) {
+    //            //先查缓存 再查数据库
+    //            jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+    //            if (jsonObj != null) {
+    //                String jsonString = jsonObj.toString();
+    //                if ("null".equals(jsonString)) {
+    //                    return null;
+    //                }
+    //                return JSON.parseObject(jsonString, CoursePublish.class);
+    //            }
+    //            //再次查缓存
+    //            log.info("----------------从数据库查询----------------");
+    //            //从数据库查询
+    //            CoursePublish coursePublish = getCoursePublish(courseId);
+    //            if (coursePublish != null) {
+    //                //设置过期时间300秒 解决雪崩问题设置随机加10s
+    //                redisTemplate.opsForValue().set("course:" + courseId,
+    //                        JSON.toJSONString(coursePublish),
+    //                        300 + new Random().nextInt(100), TimeUnit.SECONDS);
+    //            }
+    //            return coursePublish;
+    //        }
+    //    }
+    //}
+
+    //使用 redis.setNx
+    //@Override
+    //public CoursePublish getCoursePublishCache(Long courseId) {
+    //    //查询缓存 如果查询是一个不存在的数据 将null存入缓存中 减少数据库压力
+    //    Object jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+    //    if (jsonObj != null) {
+    //        String jsonString = jsonObj.toString();
+    //        if ("null".equals(jsonString)) {
+    //            return null;
+    //        }
+    //        log.info("=================从缓存查=================");
+    //        return JSON.parseObject(jsonString, CoursePublish.class);
+    //    } else {
+    //        //减小锁范围 setNx
+    //        Boolean lock01 = redisTemplate.opsForValue().setIfAbsent("lock01", "01");
+    //        if (lock01) {
+    //            //true 设置成功，表示抢到锁
+    //            //先查缓存 再查数据库
+    //            jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+    //            if (jsonObj != null) {
+    //                String jsonString = jsonObj.toString();
+    //                if ("null".equals(jsonString)) {
+    //                    return null;
+    //                }
+    //                return JSON.parseObject(jsonString, CoursePublish.class);
+    //            }
+    //            //再次查缓存
+    //            log.info("----------------从数据库查询----------------");
+    //            //从数据库查询
+    //            CoursePublish coursePublish = getCoursePublish(courseId);
+    //            if (coursePublish != null) {
+    //                //设置过期时间300秒 解决雪崩问题设置随机加10s
+    //                redisTemplate.opsForValue().set("course:" + courseId,
+    //                        JSON.toJSONString(coursePublish),
+    //                        300 + new Random().nextInt(100), TimeUnit.SECONDS);
+    //            }
+    //            return coursePublish;
+    //        }
+    //    }
+    //    return null;
+    //}
+    //redission
+    @Override
+    public CoursePublish getCoursePublishCache(Long courseId) {
+        //查询缓存 如果查询是一个不存在的数据 将null存入缓存中 减少数据库压力
+        Object jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+        if (jsonObj != null) {
+            String jsonString = jsonObj.toString();
+            if ("null".equals(jsonString)) {
+                return null;
+            }
+            log.info("=================从缓存查=================");
+            return JSON.parseObject(jsonString, CoursePublish.class);
+        } else {
+            RLock lock = redissonClient.getLock("coursequerylock:" + courseId);
+            //获取分布式锁
+            lock.lock();
+            try {
+                //先查缓存 再查数据库
+                jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+                if (jsonObj != null) {
+                    String jsonString = jsonObj.toString();
+                    if ("null".equals(jsonString)) {
+                        return null;
+                    }
+                    return JSON.parseObject(jsonString, CoursePublish.class);
+                }
+                //再次查缓存
+                log.info("----------------从数据库查询----------------");
+                //测试锁的续期
+                //try {
+                //    Thread.sleep(60000);
+                //} catch (InterruptedException e) {
+                //    throw new RuntimeException(e);
+                //}
+                //从数据库查询
+                CoursePublish coursePublish = getCoursePublish(courseId);
+                if (coursePublish != null) {
+                    //设置过期时间300秒 解决雪崩问题设置随机加10s
+                    redisTemplate.opsForValue().set("course:" + courseId,
+                            JSON.toJSONString(coursePublish),
+                            300 + new Random().nextInt(100), TimeUnit.SECONDS);
+                }
+                return coursePublish;
+            } finally {
+                lock.unlock();
+            }
+        }
     }
 }

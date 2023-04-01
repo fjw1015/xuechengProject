@@ -8,3 +8,7 @@ spring:
     url: jdbc:mysql://192.168.5.129:3306/xczx?serverTimezone=UTC&userUnicode=true&useSSL=false&
     username: root
     password: root
+
+weixin:
+  appid: wx17655f8047b85150
+  secret: 68918d65287802a19b1905cbda7eaa93

@@ -66,7 +66,9 @@ public class CoursePublishController {
     @ResponseBody
     public CoursePreviewDto getCoursePublish(@PathVariable("courseId") Long courseId) {
         //查询课程发布表 获取课程预览信息
-        CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
+        //CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
+        //从缓存中查询
+        CoursePublish coursePublish = coursePublishService.getCoursePublishCache(courseId);
         CoursePreviewDto coursePreviewDto = new CoursePreviewDto();
         if (coursePublish == null) {
             return coursePreviewDto;

@@ -33,6 +33,9 @@ spring:
           - data-id: search-${spring.profiles.active}.yaml
             group: xuecheng-plus-project
             refresh: true
+          - data-id: redis-${spring.profiles.active}.yaml
+            group: xuecheng-plus-common
+            refresh: true
   profiles:
     active: dev
 
